@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>HawkJS</title>
+</head>
+<body>
+	<h1>HawkJS</h1>
+	<div id="app">
+		<div h-if="show">
+			Label: <label h-text="title"></label>
+			<br/>
+			<input type="text" h-model="title"/>
+			<button h-click="add">Add</button>
+			<br/>
+		</div>
+		<ul>
+			<li h-for="item in items">{{item.name}}</li>
+		</ul>
+		<button h-text="buttonTitle" h-click="hide">Hide</button>
+	</div>
+
+	<!-- HawkJS -->
+	<script src="hawkjs.js" type="text/javascript"></script>
+	<script>
+		new HawkJs.App({
+		  el: 'app',
+		  data: {
+		  	title: 'Test',
+		  	show: true,
+		  	buttonTitle: 'Hide',
+		  	items: [
+		  		{name:'Ali'},
+		  		{name:'Farrukh'},
+		  		{name:'Made HawkJS!'}
+		  	]
+		  },
+		  methods: {
+		  	hide(){		  		
+		  		this.show = !this.show
+		  		if(this.show){
+		  			this.buttonTitle = 'Hide'
+		  		}else{
+		  			this.buttonTitle = 'Show'
+		  		}
+		  		// method calling
+		  		this.test()
+		  	},
+		  	test(){
+		  		alert('Conten is going to '+(this.show?'Show':'Hide'));
+		  	},
+		  	add(){
+		  		if(this.title!=''){
+		  			this.items.push({name: this.title})
+		  			this.title = ''
+		  			console.log(this.items)
+		  		}
+		  	}
+		  }
+		})
+	</script>
+</body>
+</html>
