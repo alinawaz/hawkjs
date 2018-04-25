@@ -2,11 +2,12 @@
 
 Frontend reactive library.
 
+* With TodoList Example
+
 ### Setup Guide? ###
 
-* Install NodeJS
 * Run npm install in main directory
-* run and see output in index.html :)
+* `npm run server` and see output :)
 
 ### Author ###
 

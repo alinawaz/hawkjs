@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "babel src --out-file hawkjs.js --presets es2015",
-    "webpack": "webpack-dev-server --no-inline",
+    "server": "webpack-dev-server --no-inline",
     "start": "http-server"
   },
   "author": "Ali Nawaz",
