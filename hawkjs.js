@@ -248,32 +248,72 @@ var Reactor = exports.Reactor = function () {
 			while (node.parentElement.childNodes.length > 2) {
 				node.parentElement.removeChild(node.parentElement.lastChild);
 			}
-			console.log(node.parentElement);
 			var parent = node.parentElement;
 			var iterable = observable[chunk[2]];
 			for (var i = 0; i < iterable.length; i++) {
 				var nodeClone = node.cloneNode(true);
-				var content = nodeClone.textContent.replace(chunk[0], '');
-				content = content.replace('{{', '');
-				content = content.replace('}}', '');
-				content = content.trim();
-				if (content == '') {
-					nodeClone.textContent = nodeClone.textContent.replace(nodeClone.textContent, iterable[i]);
-				} else {
-					if (content.charAt(0) == '.') content = content.substr(1);
-					nodeClone.textContent = nodeClone.textContent.replace(nodeClone.textContent, this.resolveMethodChaining(iterable[i], content));
-				}
+				nodeClone.innerHTML = this.resolveVariables(nodeClone.innerHTML, iterable[i]);
+				nodeClone.innerHTML = this.resolveClickEvent(this.props, nodeClone, nodeClone.innerHTML, iterable[i], chunk[0]);
 				nodeClone.removeAttribute('h-for');
 				parent.appendChild(nodeClone);
 			}
 		}
 	}, {
-		key: 'resolveMethodChaining',
-		value: function resolveMethodChaining(chainedObject, pathString) {
+		key: 'resolveBraces',
+		value: function resolveBraces(content) {
+			return content.substring(content.lastIndexOf("{{") + 2, content.lastIndexOf("}}"));
+		}
+	}, {
+		key: 'resolveClickTag',
+		value: function resolveClickTag(content) {
+			return content.substring(content.lastIndexOf('@click[') + 7, content.lastIndexOf(']'));
+		}
+	}, {
+		key: 'resolveClickEvent',
+		value: function resolveClickEvent(props, node, content, iterable, var_name) {
+			var clickContent = this.resolveClickTag(content);
+			while (clickContent.trim() != '') {
+				if (clickContent.indexOf('(') > -1) {
+					var param = clickContent.substring(clickContent.lastIndexOf('(') + 1, clickContent.lastIndexOf(')'));
+					var methodName = clickContent.replace('(' + param + ')', '');
+					if (param == var_name) {
+						param = iterable;
+					}
+					content = content.replace('@click[' + clickContent + ']', '');
+					//node.onclick = this.props.methods[methodName](param).bind(Object.assign(this.props.data,this.props.methods))
+					var polishedMethod = props.methods[methodName].apply(null, [param]);
+					console.log(polishedMethod);
+					node.onclick = polishedMethod;
+				} else {
+					content = content.replace('@click[' + clickContent + ']', '');
+					node.onclick = props.methods[clickContent].bind(Object.assign(props.data, this.props.methods));
+				}
+				clickContent = this.resolveClickTag(content);
+			}
+			return content;
+		}
+	}, {
+		key: 'resolveVariables',
+		value: function resolveVariables(content, iterable) {
+			var braceContent = this.resolveBraces(content);
+			while (braceContent.trim() != '') {
+				if (braceContent.indexOf('.') > -1) {
+					content = content.replace("{{" + braceContent + "}}", this.resolveChaining(iterable, braceContent));
+				} else {
+					content = content.replace("{{" + braceContent + "}}", iterable);
+				}
+				braceContent = this.resolveBraces(content);
+			}
+			return content;
+		}
+	}, {
+		key: 'resolveChaining',
+		value: function resolveChaining(chainedObject, pathString) {
 			pathString = pathString.split('.');
 			var current = chainedObject;
 			while (pathString.length) {
 				if ((typeof current === 'undefined' ? 'undefined' : _typeof(current)) !== 'object') return undefined;
+				pathString.shift();
 				current = current[pathString.shift()];
 			}
 			return current;

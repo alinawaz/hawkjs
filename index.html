@@ -3,21 +3,35 @@
 <head>
 	<meta charset="UTF-8">
 	<title>HawkJS</title>
+	<link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css">
 </head>
-<body>
-	<h1>HawkJS</h1>
+<body>	
+
+	<!-- Application -->
 	<div id="app">
-		<div h-if="show">
-			Label: <label h-text="title"></label>
-			<br/>
-			<input type="text" h-model="title"/>
-			<button h-click="add">Add</button>
-			<br/>
+		<div class="container">
+
+			<h1>HawkJS: Todo List Example</h1>
+				
+			<div class="form-inline" h-if="show">
+				<div class="form-group mb-2">
+			    	<input h-model="title" type="text" class="form-control" placeholder="Add Item to list">
+			  	</div>
+			  	<button h-click="add" class="btn btn-primary mb-2 ml-2">Add</button>
+			</div>
+
+			<ul class="list-group">
+			  <li h-for="item in items" class="list-group-item">
+			  	<div class="row">
+			  		<div class="col-md-6">{{item.name}}</div>
+			  		<div class="col-md-6">
+			  			<button @click{remove(item)} class="btn btn-danger mb-2 ml-2 float-right">Delete</button>
+			  		</div>
+			  	</div>
+			  </li>
+			</ul>
+
 		</div>
-		<ul>
-			<li h-for="item in items">{{item.name}}</li>
-		</ul>
-		<button h-text="buttonTitle" h-click="hide">Hide</button>
 	</div>
 
 	<!-- HawkJS -->
@@ -26,35 +40,22 @@
 		new HawkJs.App({
 		  el: 'app',
 		  data: {
-		  	title: 'Test',
-		  	show: true,
-		  	buttonTitle: 'Hide',
+		  	title: '',
 		  	items: [
-		  		{name:'Ali'},
-		  		{name:'Farrukh'},
-		  		{name:'Made HawkJS!'}
+		  		{name:'Item 1'},
+		  		{name:'Item 2'},
+		  		{name:'Item 3'}
 		  	]
 		  },
 		  methods: {
-		  	hide(){		  		
-		  		this.show = !this.show
-		  		if(this.show){
-		  			this.buttonTitle = 'Hide'
-		  		}else{
-		  			this.buttonTitle = 'Show'
-		  		}
-		  		// method calling
-		  		this.test()
-		  	},
-		  	test(){
-		  		alert('Conten is going to '+(this.show?'Show':'Hide'));
-		  	},
 		  	add(){
 		  		if(this.title!=''){
 		  			this.items.push({name: this.title})
 		  			this.title = ''
-		  			console.log(this.items)
 		  		}
+		  	},
+		  	remove(item, index){
+		  		this.items.splice(index,1)
 		  	}
 		  }
 		})

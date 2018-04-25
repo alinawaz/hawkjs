@@ -8,8 +8,9 @@ module.exports = {
     output: {
         filename: './hawkjs.js',
         library: 'HawkJs',
-    	libraryTarget:'umd'
+        libraryTarget:'umd'
     },
+    watch: true,
     resolve: {
       modules: [
         path.resolve('./src/')
@@ -21,15 +22,32 @@ module.exports = {
    //  	})
   	// ],
     module: {
-        loaders: [
-            {
-                test: /\.js$/,
-                exclude: /node_modules/,
-                loader: 'babel-loader',
-                query: {
-                    presets: ['es2015']
-                }
+        // loaders: [
+        //     {
+        //         test: /\.js$/,
+        //         exclude: /node_modules/,
+        //         loader: 'babel-loader',
+        //         query: {
+        //             presets: ['es2015']
+        //         }
+        //     }
+        // ],
+        rules: [
+        {
+          test: /\.css$/,
+          use: [
+            { loader: "style-loader" },
+            { loader: "css-loader" }
+          ]
+        },{
+          test: /\.js$/,
+          exclude: /(node_modules|bower_components)/,
+          use: { 
+            loader: 'babel-loader',
+            options: {
+              presets: ['es2015']
             }
-        ],
+          } 
+        }]
     }
 };
